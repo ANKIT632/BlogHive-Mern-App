@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import 'dotenv/config';
 import bcrypt from 'bcrypt';
+import  jwt from 'jsonwebtoken';
 
 //schema
 import User from './Schema/User.js';
@@ -35,15 +36,28 @@ let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for pass
 
     isUserExist ? username+=nanoid().substring(0,6):"";
 
-    return username;
+    return username; 
    }
+
+const formatDataSend=(user)=>{
+  const access_token=jwt.sign({id:user._id},process.env.SECRET_ACCESS_KEY);
+
+   return {
+    access_token,
+     profile_img:user.personal_info.profile_img,
+     username:user.personal_info.username,
+     fullname:user.personal_info.fullname
+   }
+}
+
 
 
 server.post('/signup',(req,res)=>{
 
 let {fullname,email,password}=req.body;
 
- if(fullname.length<3){
+
+ if(!fullname || fullname.length<3){
     return res.status(403).json({"error":"Fullname must be at least 3  letter long"});
  }
 
@@ -68,8 +82,8 @@ let {fullname,email,password}=req.body;
     personal_info:{fullname,email,password:hashed_Password,username}
   });
 
-  user.save().then((user)=>{
-    return res.status(200).json({"success":user+ "save created successfully"});
+  user.save().then((userData)=>{
+    return res.status(200).json(formatDataSend(userData));
   }).catch((err)=>{
     if(err.code===11000){
       return res.status(500).json({"error":"Email is already exist"});
@@ -83,12 +97,39 @@ let {fullname,email,password}=req.body;
 
 
  
+server.post('/signin', async(req,res)=>{
+  let {email,password} = req.body;
 
-server.post('/signin',(req,res)=>{
-    console.log(req.body);
-    res.json(req.body);
+  await User.findOne({"personal_info.email":email})
+   .then((user)=>{
+      if(!user){
+        return res.status(403).json({'error':"Email not found"});
+      }
+
+       bcrypt.compare(password, user.personal_info.password, (err,result) => {
+        
+          if(err){
+            return res.status(403).json({"error":"Error occur while login try again"});
+          }
+        
+
+          if(!result){
+              return res.status(403).json({"error":"Incorrect password"});
+          } 
+
+          else{
+            return res.status(200).json(formatDataSend(user));
+          }
+          
+      });
+
+   })
+   .catch(err=>{
+    return res.status(500).json({"error":err.message});
+   })
+ 
 })
 
 server.listen(PORT,()=>{ 
     console.log('listening on port '+PORT);
-});
+}); 
