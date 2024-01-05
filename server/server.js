@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import 'dotenv/config';
 import bcrypt from 'bcrypt';
 import  jwt from 'jsonwebtoken';
-
+import cors from 'cors'; // receive data from any where(any port);
 //schema
 import User from './Schema/User.js';
 import { nanoid } from 'nanoid';
@@ -21,6 +21,8 @@ mongoose.connect("mongodb://0.0.0.0:27017/mernBlogHive",{
 });
 
 server.use(express.json());
+
+server.use(cors());
 
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
 let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password

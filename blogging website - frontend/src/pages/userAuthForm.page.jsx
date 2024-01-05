@@ -1,16 +1,75 @@
 import InputBox from '../components/input.component'
 import googleIcon from '../imgs/google.png'
+
 import { Link } from 'react-router-dom'
 import AnimationWrapper from '../common/page-animation'
+import { useRef } from 'react'
+import axios from 'axios'
+import {Toaster,toast} from 'react-hot-toast'
 
 const userAuthForm = ({ type }) => {
+  
+    const authForm = useRef();
+
+//  send data to server
+    const  userAuthThrougthServer=(serverRoute,formdata)=>{
+       axios.post(import.meta.env.VITE_SERVER_DOMAIN+serverRoute,formdata)
+       .then(({data})=>{console.log("data",data)})
+       .catch(({response})=>{
+        toast.error(response.data.error);
+       });
+    }
+ 
+     const handleSubmit=(e)=>{
+        e.preventDefault();
+        
+        let serverRoute =type=='sign-in'?'/signin':'/signup';
+
+        // formData
+        let form=new FormData(authForm.current);
+        let formData={};
+
+        for(let [key,value] of form.entries()){
+            formData[key]=value;
+        }
+
+        //regex
+        let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; 
+        let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; 
+
+      let {fullname,email,password} = formData;
+
+ 
+ if(type==='sign-Up' && fullname.length<3){
+    return toast.error("Fullname must be at least 3  letter long");
+ }
 
 
 
+  if(!email.length){
+     return toast.error("Enter email");
+  }
+
+  if(!emailRegex.test(email)){ 
+    return toast.error("Email is invalid");
+  }
+
+  if(!passwordRegex.test(password)){
+    return toast.error("Password should be 6 to 20 characters long with a numeric , 1 lowercase and 1 uppercase");
+  }
+
+
+  userAuthThrougthServer(serverRoute,formData);
+
+     }
+    
+ 
     return (
         <AnimationWrapper keyValue={type}>
+
             <section className='h-cover flex items-center justify-center'>
-                <form className='w-[80%] max-w-[400px]'>
+<Toaster/>
+                <form ref={authForm} className='w-[80%] max-w-[400px]'>
                     <h1 className='text-4xl font-gelsio capitalize text-center mb-5'>
                         {type == 'sign-in' ? "Welcome back" : "join us today"}
                     </h1>
@@ -40,9 +99,12 @@ const userAuthForm = ({ type }) => {
                     <button
                         className='btn-dark center mt-8 mb-5'
                         type='submit'
+                        onClick={handleSubmit}
                     >
                         {type.replace('-', ' ')}
                     </button>
+
+
 
                     <div className='relative w-full flex items-center gap-2 my-5 opacity-20 uppercase text-black font-bold'>
                         <hr className='w-1/2 border-black' />
