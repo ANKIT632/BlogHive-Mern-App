@@ -1,20 +1,29 @@
 import InputBox from '../components/input.component'
 import googleIcon from '../imgs/google.png'
 
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import AnimationWrapper from '../common/page-animation'
-import { useRef } from 'react'
+
 import axios from 'axios'
 import {Toaster,toast} from 'react-hot-toast'
+import {SetSession} from '../common/session'
+import { useContext } from 'react'
+import { UserContext } from '../App'
 
 const userAuthForm = ({ type }) => {
   
-    const authForm = useRef();
+   
+let {userAuth :{access_token},setUserAuth}=useContext(UserContext);     // {access_token} --> userAuth.access_token
 
 //  send data to server
     const  userAuthThrougthServer=(serverRoute,formdata)=>{
        axios.post(import.meta.env.VITE_SERVER_DOMAIN+serverRoute,formdata)
-       .then(({data})=>{console.log("data",data)})
+       .then(({data})=>{ 
+            
+             SetSession('user',JSON.stringify(data));  // bec's browser store only string data.
+             setUserAuth(data);
+             console.log(sessionStorage);
+       })
        .catch(({response})=>{
         toast.error(response.data.error);
        });
@@ -26,7 +35,7 @@ const userAuthForm = ({ type }) => {
         let serverRoute =type=='sign-in'?'/signin':'/signup';
 
         // formData
-        let form=new FormData(authForm.current);
+        let form=new FormData(formElement);
         let formData={};
 
         for(let [key,value] of form.entries()){
@@ -65,11 +74,12 @@ const userAuthForm = ({ type }) => {
     
  
     return (
+        access_token?<Navigate to='/'/>:
         <AnimationWrapper keyValue={type}>
 
             <section className='h-cover flex items-center justify-center'>
 <Toaster/>
-                <form ref={authForm} className='w-[80%] max-w-[400px]'>
+                <form id='formElement' className='w-[80%] max-w-[400px]'>
                     <h1 className='text-4xl font-gelsio capitalize text-center mb-5'>
                         {type == 'sign-in' ? "Welcome back" : "join us today"}
                     </h1>
