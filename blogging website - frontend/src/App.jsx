@@ -20,7 +20,7 @@ const App = () => {
     return (
        <UserContext.Provider value={{userAuth,setUserAuth}}>
             <Routes>
-                <Route path="/" element={<Navbar />}> 
+                <Route path="/" element={<Navbar />}>
                     <Route path="/signin" element={<UserAuthForm type={"sign-in"}/>} /> 
                     <Route path="/signUp" element={<UserAuthForm type={"sign-Up"}/>} />
                 </Route>

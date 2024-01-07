@@ -6,7 +6,7 @@ import UserNavigationPanel from './user-navigation.component';
 
 const navbar = () => {
 
-    const [searchBoxVisibility, setSearchBoxVisibility] = useState(false);
+const [searchBoxVisibility, setSearchBoxVisibility] = useState(false);  
 
     const { userAuth, userAuth: { access_token, profile_img } } = useContext(UserContext);
 
@@ -48,7 +48,7 @@ const navbar = () => {
                                 </Link>
 
                                 <div className='relative'>
-                                    <button className='w-11 h-11 mt-1'>
+                                    <button className='w-11 h-11 '>
 
                                         <img src={profile_img} className='w-full h-full object-cover rounded-full' />
                                     </button>
