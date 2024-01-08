@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { json } from 'express';
 import mongoose from 'mongoose';
 import 'dotenv/config';
 import bcrypt from 'bcrypt';
@@ -7,10 +7,17 @@ import cors from 'cors'; // receive data from any where(any port);
 //schema
 import User from './Schema/User.js';
 import { nanoid } from 'nanoid';
+import admin from 'firebase-admin';
+import ServiceAccountKey from './bloghive-f8d94-firebase-adminsdk-8r8oc-c9aecb1240.json' assert{"type":"json"};
+import {getAuth} from 'firebase-admin/auth'
+
 
 const server=express();
 let PORT=3000;
 
+admin.initializeApp({
+  credential:admin.credential.cert(ServiceAccountKey)
+})
 
 // mongoose.connect(process.env.DB_URL,{
 //     autoIndex:true
@@ -131,6 +138,59 @@ server.post('/signin', async(req,res)=>{
    })
  
 })
+
+// google auth route
+server.post('/google-auth',async(req,res)=>{
+  let {access_token}=req.body;
+
+  getAuth()
+  .verifyIdToken(access_token).then(async(user)=>{
+         let{email,name,picture}=user;
+         
+         // get higth resolution pic
+         picture=picture.replace('s96-c','s384-c');
+
+         let  userData=await User.findOne({"personal_info.email":email}).select("personal_info.fullname personal_info.username personal_info.profile_img google_auth")
+         .then((u)=>{
+          return u || null
+         })
+         .catch(err=>{
+          return res.status(500).json({'error':err.message});
+         })
+
+         if(userData){
+          // if user alredy login without google_Auth
+          if(!userData.google_auth){
+                  return res.status(403).json({"error":"This email was sign-Up without google. please log in with password to access the account"});
+          }
+
+          else{
+               
+            let username = await generateUserName(email);
+            userData= new User({fullname:{name,email,profile_img:picture,username}
+              , google_auth:true
+            });
+            
+            await userData.save().then((u)=>{
+              userData=u;
+            })
+            .catch(err=>{
+              return res.status(500).json({"error":err.message});
+            })
+          }
+        
+          return res.status(200).json(formatDataSend(userData));
+
+         }
+
+  }).catch(err=>{
+
+    return res.status(500).json({'error':"failed to authrntication ,try with some other account"});
+  })
+});
+
+
+
 
 server.listen(PORT,()=>{ 
     console.log('listening on port '+PORT);
