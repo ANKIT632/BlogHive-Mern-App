@@ -9,6 +9,7 @@ import {Toaster,toast} from 'react-hot-toast'
 import {SetSession} from '../common/session'
 import { useContext } from 'react'
 import { UserContext } from '../App'
+import { authWithGoogle } from '../common/firebase'
 
 const userAuthForm = ({ type }) => {
   
@@ -28,7 +29,25 @@ let {userAuth :{access_token},setUserAuth}=useContext(UserContext);     // {acce
         toast.error(response.data.error);
        });
     }
+
+
+    // googleAuth
+
+    const handleGoogleAuth=(e)=>{
+        e.preventDefault();
+
+        authWithGoogle().then(user=>{
+            console.log(user);
+        }).catch(err=>{
+            toast.error('troble login trough google');
+            return console.log(err);
+        })
+    }
+
+
  
+
+    // credential check
      const handleSubmit=(e)=>{
         e.preventDefault();
         
@@ -123,8 +142,10 @@ let {userAuth :{access_token},setUserAuth}=useContext(UserContext);     // {acce
 
                     </div>
 
-                    <button className='btn-dark flex items-center justify-center gap-4 w-[75%] center'>
-
+                    <button className='btn-dark flex items-csenter justify-center gap-4 w-[75%] center'
+                      onClick={handleGoogleAuth}
+                    >
+                         
                         <img src={googleIcon} className='w-5' />
                         continue with google
                     </button>
