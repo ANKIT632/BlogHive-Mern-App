@@ -25,7 +25,7 @@ const handleBlur=()=>{
     return (
         <>
 
-            <nav className='navbar'>
+            <nav className='navbar md:shadow'>
 
                 <Link to='/' className='flex-none w-10'>
                     <img src={logo} className='w-full' />

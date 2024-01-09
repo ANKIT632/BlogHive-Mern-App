@@ -37,7 +37,7 @@ const userAuthForm = ({ type }) => {
         e.preventDefault();
 
         authWithGoogle().then(user => {
-
+         
             let serverRoute = '/google-auth';
             let formData = {
                 access_token: user.accessToken
@@ -102,7 +102,7 @@ const userAuthForm = ({ type }) => {
         access_token ? <Navigate to='/' /> :
             <AnimationWrapper keyValue={type}>
 
-                <section className='h-cover flex items-center justify-center'>
+                <section className='h-cover flex items-center justify-center '>
                     <Toaster />
                     <form id='formElement' className='w-[80%] max-w-[400px]'>
                         <h1 className='text-4xl font-gelsio capitalize text-center mb-5'>

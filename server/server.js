@@ -115,6 +115,10 @@ server.post('/signin', async(req,res)=>{
         return res.status(403).json({'error':"Email not found"});
       }
 
+      if(user.google_auth){
+        return res.status(403).json({"error":"This email was sign-Up with google. please log in with google !!"});
+      }
+
        bcrypt.compare(password, user.personal_info.password, (err,result) => {
         
           if(err){
@@ -137,37 +141,41 @@ server.post('/signin', async(req,res)=>{
     return res.status(500).json({"error":err.message});
    })
  
-})
+});
+
+
 
 // google auth route
 server.post('/google-auth',async(req,res)=>{
   let {access_token}=req.body;
-
+   
   getAuth()
   .verifyIdToken(access_token).then(async(user)=>{
          let{email,name,picture}=user;
-         
+        
          // get higth resolution pic
          picture=picture.replace('s96-c','s384-c');
 
          let  userData=await User.findOne({"personal_info.email":email}).select("personal_info.fullname personal_info.username personal_info.profile_img google_auth")
-         .then((u)=>{
-          return u || null
+         .then((u)=>{ 
+          return u || null;
          })
          .catch(err=>{
           return res.status(500).json({'error':err.message});
          })
 
-         if(userData){
+      
           // if user alredy login without google_Auth
-          if(!userData.google_auth){
+          if(userData && !userData.google_auth){
                   return res.status(403).json({"error":"This email was sign-Up without google. please log in with password to access the account"});
           }
+        
 
           else{
                
             let username = await generateUserName(email);
-            userData= new User({fullname:{name,email,profile_img:picture,username}
+
+            userData= new User({personal_info:{fullname:name,email,profile_img:picture,username}
               , google_auth:true
             });
             
@@ -178,10 +186,10 @@ server.post('/google-auth',async(req,res)=>{
               return res.status(500).json({"error":err.message});
             })
           }
-        
+          console.log(" UserLoginData ",userData);
           return res.status(200).json(formatDataSend(userData));
 
-         }
+         
 
   }).catch(err=>{
 
@@ -191,7 +199,7 @@ server.post('/google-auth',async(req,res)=>{
 
 
 
-
+ 
 server.listen(PORT,()=>{ 
     console.log('listening on port '+PORT);
-}); 
+});  
