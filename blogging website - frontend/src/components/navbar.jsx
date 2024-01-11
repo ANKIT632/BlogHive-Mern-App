@@ -73,12 +73,12 @@ const handleBlur=()=>{
 
                             :
                             <>
-                                <Link className='btn-dark py-2 md:py-3' to="/signin">
-                                    <strong> sign in</strong>
+                                <Link className='btn-dark text-center font-bold h-10 py-2 md:my-2' to="/signin">
+                                    sign in
                                 </Link>
 
-                                <Link className='btn-light hidden py-2  md:block md:py-3 ' to="/signup">
-                                    <strong> sign Up</strong>
+                                <Link className='btn-light hidden font-bold h-10 py-2 md:block md:my-2' to="/signup">
+                                    sign Up
                                 </Link>
                             </>
                     }
