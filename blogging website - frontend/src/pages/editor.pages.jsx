@@ -12,7 +12,7 @@ const Editor = () => {
 
   return (
    access_token===null ? <Navigate to="/signin"/> 
-   : editorState==='editor'?<BlogEditor/>:<PublishForm/>
+   : editorState=='editor'?<BlogEditor/>:<PublishForm/>
   )
 }
 
