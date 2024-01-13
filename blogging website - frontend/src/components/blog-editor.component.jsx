@@ -2,17 +2,46 @@ import {Link} from 'react-router-dom';
 import logo from '../imgs/logo.png';
 import AnimationWrapper from '../common/page-animation';
 import defaultBannner from '../imgs/blog banner.png';
+import {Toaster, toast} from 'react-hot-toast'
+import { useRef } from 'react';
 
 const BlogEditor= () => {
 
+  let blogBannerRef=useRef();
+
+const handleTitleKeyDown=()=>{
+   if(e.keyCode==13){
+    e.preventDefault();
+   }
+}
+
+const handleTitleChange=(e)=>{
+   let input=e.target;
+
+   input.style.height='auto';
+   input.style.height=input.scrollHeight+"px"
+}
+
   const handleBannerUpload=(e)=>{
         let selectImg=e.target.files[0];
+
+        if(selectImg){
+          // let lodingToast=toast.loading("uploading...");
+
+          // add on db.
+          
+           toast.dismiss(lodingToast);
+           toast.success('uploaded');
+
+          blogBannerRef.current.src=selectImg;
+        }
   }
 
   return (
 
     <>
-         <nav className='navbar shadow'>
+  
+          <nav className='navbar shadow'>
            <Link to='/' className='flex-none w-10'>
              <img src={logo}/>
            </Link>
@@ -33,18 +62,20 @@ const BlogEditor= () => {
           
     </nav>
 
-
+    <Toaster/>
     <AnimationWrapper>
             <section>
               <div className='mx-auto max-w-[900px] w-full'>
-                  <div className='relative aspect-video bg-white border-4 border-grey'>
+
+                  <div className="relative aspect-video hover:opacity-80 bg-white border-4 border-grey ">
                       <label htmlFor='uploadBanner'>
                             <img
+                              ref={blogBannerRef}
                               src={defaultBannner}
                               className='z-20'
-                              style={{ cursor: 'pointer' }}
+                             
                             />
-                      </label>
+                    
 
                       <input 
                         id='uploadBanner'
@@ -53,7 +84,18 @@ const BlogEditor= () => {
                         hidden
                         onChange={handleBannerUpload}
                       />
+
+             </label>
                   </div>
+
+                  <textarea
+                  placeholder='Blog Title'
+                  className='text-2xl font-medium w-full h-20 outline-none resize-none mt-10 leading-tight placeholder:opacity-40 md:text-3xl'
+                  onKeyDown={handleTitleKeyDown}
+                  onChange={handleTitleChange}
+                  >
+
+                  </textarea>
               </div>
             </section>
            </AnimationWrapper>
