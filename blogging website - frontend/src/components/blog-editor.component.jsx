@@ -3,7 +3,7 @@ import logo from '../imgs/logo.png';
 import AnimationWrapper from '../common/page-animation';
 import defaultBannner from '../imgs/blog banner.png';
 import {Toaster, toast} from 'react-hot-toast'
-import { useRef } from 'react';
+import { useRef,useState } from 'react';
 
 const BlogEditor= () => {
 
@@ -15,6 +15,8 @@ const handleTitleKeyDown=()=>{
    }
 }
 
+const [selectedImage, setSelectedImage] = useState(null);
+
 const handleTitleChange=(e)=>{
    let input=e.target;
 
@@ -23,17 +25,29 @@ const handleTitleChange=(e)=>{
 }
 
   const handleBannerUpload=(e)=>{
-        let selectImg=e.target.files[0];
+  
 
+        let selectImg=e.target.files[0];
+        
+        console.log("img..1 ",selectImg);
+
+        // if not select img after click the return null
         if(selectImg){
+          
           // let lodingToast=toast.loading("uploading...");
 
           // add on db.
-          
-           toast.dismiss(lodingToast);
-           toast.success('uploaded');
 
-          blogBannerRef.current.src=selectImg;
+          //  toast.dismiss(lodingToast);
+          //  toast.success('uploaded');
+
+          const reader = new FileReader();
+          reader.onload = () => {
+            setSelectedImage(reader.result);
+          };
+          reader.readAsDataURL(selectedFile);
+
+          // blogBannerRef.current.src=selectImg;
         }
   }
 
@@ -68,10 +82,11 @@ const handleTitleChange=(e)=>{
               <div className='mx-auto max-w-[900px] w-full'>
 
                   <div className="relative aspect-video hover:opacity-80 bg-white border-4 border-grey ">
+
                       <label htmlFor='uploadBanner'>
                             <img
-                              ref={blogBannerRef}
-                              src={defaultBannner}
+                              // ref={blogBannerRef}
+                              src={selectedImage?selectedImage:defaultBannner}
                               className='z-20'
                              
                             />
