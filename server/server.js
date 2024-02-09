@@ -57,7 +57,7 @@ const formatDataSend = (user) => {
   return {
     access_token,
     profile_img: user.personal_info.profile_img,
-    username: user.personal_info.username,
+    username: user.personal_info.username, 
     fullname: user.personal_info.fullname
   }
 }
@@ -176,24 +176,26 @@ server.post('/google-auth', async (req, res) => {
         return res.status(403).json({ "error": "This email was sign-Up without google. please log in with password to access the account" });
       }
 
+      // if user are no register
 
-      else {
+      // else {
 
-        let username = await generateUserName(email);
+      //   let username = await generateUserName(email);
 
-        userData = new User({
-          personal_info: { fullname: name, email, profile_img: picture, username }
-          , google_auth: true
-        });
+      //   userData = new User({
+      //     personal_info: { fullname: name, email, profile_img: picture, username }
+      //     , google_auth: true
+      //   });
 
-        await userData.save().then((u) => {
-          userData = u;
-        })
-          .catch(err => {
-            return res.status(500).json({ "error": err.message });
-          })
-      }
+      //   await userData.save().then((u) => {
+      //     userData = u;
+      //   })
+      //     .catch(err => {
+      //       return res.status(500).json({ "error": err.message });
+      //     })
+      // }
       console.log(" UserLoginData ", userData);
+
       return res.status(200).json(formatDataSend(userData));
 
 
@@ -201,7 +203,8 @@ server.post('/google-auth', async (req, res) => {
     }).catch(err => {
 
       return res.status(500).json({ 'error': "failed to authrntication ,try with some other account" });
-    })
+    });
+
 });
 
 
