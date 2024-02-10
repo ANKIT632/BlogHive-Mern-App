@@ -10,7 +10,7 @@ import { tools } from './tools.component';
 const BlogEditor= () => {
 
   let blogBannerRef=useRef();
-  let {blog,blog :{title,banner,content,teg,des},setBlog}=useContext(EditorContext);
+  let {blog,blog :{title,banner,content,teg,des},setBlog,textEditor,setTextEditor,setEditorState}=useContext(EditorContext);
 
 
   //useEffect 
@@ -22,6 +22,8 @@ const BlogEditor= () => {
         tools:tools,
         placeholder:"Let's write something Here"
     });
+
+    setTextEditor(editor);
   },[])
 
 // if click enter then does not work in title use it for make single line title; 
@@ -74,6 +76,36 @@ const handleTitleChange=(e)=>{
         }
   }
 
+
+  const handlePublishEvent=()=>{
+      //  if(!banner.length){
+      //   return toast.error('Upload the blog banner to publish it !!');
+      //  }
+      //  if(title.length){
+      //   return toast.error('Upload the blog title !!');
+         
+      //  }
+
+      console.log(textEditor);
+
+       if(textEditor.isReady){
+          textEditor.save().then(data=>{
+                 if(data.blocks.length){
+                  setBlog({...blog,content:data
+                  });
+                  setEditorState('publish');
+                 }
+                 else{
+                  return toast.error('Write something in your blog to publish it')
+                 }
+          })
+          .catch((err)=>{
+            console.log(err);
+          })
+       }
+     
+  }
+
   return (
 
     <>
@@ -88,10 +120,12 @@ const handleTitleChange=(e)=>{
            </p>
 
            <div className='flex gap-4 ml-auto'>
-             <button className='btn-dark py-2 px-4 font-bold'>
+             <button className='btn-dark py-2 px-4 '
+              onClick={handlePublishEvent}
+             >
                  publish
              </button>
-             <button className='btn-light py-2 px-4 font-bold'>
+             <button className='btn-light py-2 px-4 ' >
                 Save Draft
              </button>
            </div>
