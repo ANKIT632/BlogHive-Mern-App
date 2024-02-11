@@ -10,7 +10,7 @@ import { tools } from './tools.component';
 const BlogEditor= () => {
 
   let blogBannerRef=useRef();
-  let {blog,blog :{title,banner,content,teg,des},setBlog,textEditor,setTextEditor,setEditorState}=useContext(EditorContext);
+  let {blog,blog :{title,banner,content,tags,des},setBlog,textEditor,setTextEditor,setEditorState}=useContext(EditorContext);
 
 
   //useEffect 
@@ -18,7 +18,7 @@ const BlogEditor= () => {
   useEffect(()=>{
     let editor=new EditorJS({
         holderId:'textEditor',
-        data:'',
+        data:content,
         tools:tools,
         placeholder:"Let's write something Here"
     });
@@ -161,6 +161,7 @@ const handleTitleChange=(e)=>{
                   </div>
 
                   <textarea
+                  defaultValue={title}
                   placeholder='Blog Title'
                   className='text-2xl font-medium w-full h-10 outline-none  mt-10 leading-tight placeholder:opacity-40 md:text-3xl'
                   onKeyDown={handleTitleKeyDown}
