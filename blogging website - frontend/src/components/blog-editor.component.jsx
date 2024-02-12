@@ -55,14 +55,7 @@ const handleTitleChange=(e)=>{
         // if not select img after click the return null
         if(selectImg){
           
-          // let lodingToast=toast.loading("uploading...");
-
-          // add on db.
-
-          //  toast.dismiss(lodingToast);
-          //  toast.success('uploaded');
-
-       
+        
 
           const reader = new FileReader();
           reader.onload = () => {

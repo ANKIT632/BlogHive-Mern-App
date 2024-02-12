@@ -31,7 +31,7 @@ let {blog:{banner,title,tags,des},setEditorState}=useContext(EditorContext)
 
         <p className='font-gelasio line-clamp-2 text-xl leading-7 mt-4'>{des}</p>
        </div>
-
+   
 
        
      </section>
