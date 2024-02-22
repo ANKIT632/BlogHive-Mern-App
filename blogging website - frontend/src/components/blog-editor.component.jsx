@@ -79,7 +79,6 @@ const handleTitleChange=(e)=>{
          
       //  }
 
-      console.log(textEditor);
 
        if(textEditor.isReady){
           textEditor.save().then(data=>{
